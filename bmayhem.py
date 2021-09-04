@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
+# (C) Athanasios Kostopoulos 2021
+# GPLv3
 import os
 import sys
 import subprocess
 from collections.abc import Iterable
 import argparse
 
+SIG = ";MHM"
 ALLOWED_ASSEMBLERS = [
 "vasm6502_madmac",
 "vasm6502_oldstyle",
@@ -32,7 +35,7 @@ ALLOWED_ASSEMBLERS = [
 
 def build(file, ins):
     ins_line = ins.split()
-    if ins_line[0] != ";BLD": # TODO: expand
+    if ins_line[0] != SIG: # TODO: expand
         print("Invalid BLD sequence - how we even got here?")
         sys.exit(-1)
     ins_line.pop(0)
@@ -47,7 +50,6 @@ def build(file, ins):
     # flatten cmd line as a workaround ...
     cmd_line = assembler, file, ins_line,"-L", lst, "-o", final
     cmd_line = flatten(cmd_line)
-    print(cmd_line)
     subprocess.Popen(cmd_line)
 
 def find_assembly(directory):
@@ -65,7 +67,7 @@ def has_build_instructions(asm):
     """
     with open(asm, "r") as ifile:
         candidate = ifile.readline()
-        if candidate.startswith(";BLD "):
+        if candidate.startswith(SIG):
             return candidate
     return None
 

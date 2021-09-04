@@ -1,4 +1,4 @@
-;BLD vasm6502_oldstyle -Fbin -cbm-prg -chklabels -nocase
+;MHM vasm6502_oldstyle prg -Fbin -cbm-prg -chklabels -nocase
 	org $0801
 	db $0E, $08,$0A,$00,$9E,$20,$28,$32,$30,$36,$34,$29,$00,$00,$00
 
