@@ -3,7 +3,32 @@ import os
 import sys
 import subprocess
 from collections.abc import Iterable
-ALLOWED_ASSEMBLERS = [ "vasm6502_oldstyle" ]
+import argparse
+
+ALLOWED_ASSEMBLERS = [
+"vasm6502_madmac",
+"vasm6502_oldstyle",
+"vasm6502_std",
+"vasm6800_oldstyle",
+"vasm6800_std",
+"vasm6809_oldstyle",
+"vasm6809_std",
+"vasmarm_std",
+"vasmc16x_std",
+"vasmjagrisc_madmac",
+"vasmjagrisc_std",
+"vasmm68k_madmac",
+"vasmm68k_mot",
+"vasmm68k_std",
+"vasmpdp11_std",
+"vasmppc_std",
+"vasmqnice_std",
+"vasmtr3200_oldstyle",
+"vasmtr3200_std",
+"vasmvidcore_std",
+"vasmx86_std",
+"vasmz80_oldstyle",
+"vasmz80_std" ]
 
 def build(file, ins):
     ins_line = ins.split()
@@ -25,18 +50,24 @@ def build(file, ins):
     subprocess.Popen(cmd_line)
 
 def find_assembly(directory):
+    popdir = os.getcwd()
     os.chdir(directory)
     for file in [f for f in os.listdir('.') if f.endswith('.asm')]:
         ins = has_build_instructions(file)
         if ins is not None:
             build(file, ins)
+    os.chdir(popdir)
 
 def has_build_instructions(asm):
+    """
+    is the first line starting with ;BLD? if yes, it is a candidate
+    """
     with open(asm, "r") as ifile:
         candidate = ifile.readline()
         if candidate.startswith(";BLD "):
             return candidate
     return None
+
 # utility method
 def flatten(l):
     for el in l:
@@ -44,11 +75,15 @@ def flatten(l):
             yield from flatten(el)
         else:
             yield el
-# find all directories
-dirs = os.listdir(".")
-# for all directories, step in and check if there is at least one .asm file
-for directory in dirs:
-    if os.path.isdir(directory) and not directory.startswith("."):
-        find_assembly(directory)
-        # compile asm file with options given on file
 
+def main():
+    # find all directories
+    dirs = os.listdir(".")
+    # for all directories, step in and check if there is at least one .asm file
+    for directory in dirs:
+        if os.path.isdir(directory) and not directory.startswith("."):
+            find_assembly(directory)
+            # compile asm file with options given on file
+
+if __name__ == "__main__":
+    main()
