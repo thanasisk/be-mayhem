@@ -37,11 +37,12 @@ def build(file, ins):
         sys.exit(-1)
     ins_line.pop(0)
     assembler = ins_line.pop(0)
+    suffix = ins_line.pop(0)
     if assembler not in ALLOWED_ASSEMBLERS:
         print("Invalid assembler: %s - exiting" % assembler)
         sys.exit(-1)
     stem = file.split(".")[0]
-    final = stem + ".prg"
+    final = stem + "." + suffix
     lst = stem + ".lst"
     # flatten cmd line as a workaround ...
     cmd_line = assembler, file, ins_line,"-L", lst, "-o", final
@@ -77,13 +78,16 @@ def flatten(l):
             yield el
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i","--inputdir",type=str,
+    help="top-level directory to scan for asm", default=".")
+    args = parser.parse_args()
     # find all directories
-    dirs = os.listdir(".")
+    dirs = os.listdir(args.inputdir)
     # for all directories, step in and check if there is at least one .asm file
     for directory in dirs:
         if os.path.isdir(directory) and not directory.startswith("."):
             find_assembly(directory)
-            # compile asm file with options given on file
 
 if __name__ == "__main__":
     main()
